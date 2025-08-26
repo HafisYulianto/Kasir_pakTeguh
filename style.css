@@ -1,0 +1,21 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #nota-print, #nota-print * {
+        visibility: visible;
+    }
+    #nota-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .no-print {
+        display: none !important;
+    }
+}

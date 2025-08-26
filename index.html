@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Nota Pembelian</title>
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Custom -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">📝 Aplikasi Nota Pembelian</h1>
+            <p class="text-gray-600">Kelola transaksi pembelian dengan mudah dan praktis</p>
+        </div>
+
+        <!-- Info Mitra -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8 text-center border-2 border-blue-200">
+            <div class="mb-4">
+                <span class="text-6xl">🏪</span>
+            </div>
+            <h2 class="text-3xl font-bold text-blue-800 mb-3">Warung Pak Teguh</h2>
+            <p class="text-xl text-blue-700 mb-2">Jl. Raya Sukamaju No. 88</p>
+            <p class="text-lg text-blue-600">📞 0812-5555-7777</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Input -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                    🛒 Input Data Barang
+                </h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Barang</label>
+                        <input type="text" id="namaBarang" placeholder="Masukkan nama barang" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Harga Barang</label>
+                            <input type="number" id="hargaBarang" placeholder="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Barang</label>
+                            <input type="number" id="jumlahBarang" placeholder="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                <button onclick="tambahBarang()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                    ➕ Tambah Barang
+                </button>
+            </div>
+
+            <!-- Tabel Barang -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                    📋 Daftar Barang
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left font-semibold text-gray-700">Nama Barang</th>
+                                <th class="px-4 py-3 text-right font-semibold text-gray-700">Harga</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-700">Jumlah</th>
+                                <th class="px-4 py-3 text-right font-semibold text-gray-700">Subtotal</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBarang">
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                    Belum ada barang yang ditambahkan
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl font-semibold text-gray-800">Total Keseluruhan:</span>
+                        <span id="totalHarga" class="text-2xl font-bold text-green-600">Rp 0</span>
+                    </div>
+                </div>
+                <button onclick="cetakNota()" class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105">
+                    🖨️ Cetak Nota
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nota Print -->
+    <div id="nota-print" class="hidden">
+        <div class="max-w-2xl mx-auto p-8 bg-white">
+            <div class="text-center mb-6 border-b-2 border-gray-300 pb-4">
+                <h1 id="print-nama-mitra" class="text-2xl font-bold text-gray-800"></h1>
+                <p id="print-alamat-mitra" class="text-gray-600"></p>
+                <p id="print-telp-mitra" class="text-gray-600"></p>
+            </div>
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">NOTA PEMBELIAN</h2>
+                <p id="print-tanggal" class="text-gray-600"></p>
+            </div>
+            <table class="w-full mb-6 border-collapse">
+                <thead>
+                    <tr class="border-b-2 border-gray-300">
+                        <th class="text-left py-2 font-semibold">Nama Barang</th>
+                        <th class="text-right py-2 font-semibold">Harga</th>
+                        <th class="text-center py-2 font-semibold">Jumlah</th>
+                        <th class="text-right py-2 font-semibold">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="print-tabel-barang"></tbody>
+            </table>
+            <div class="border-t-2 border-gray-300 pt-4 mb-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold">TOTAL:</span>
+                    <span id="print-total" class="text-xl font-bold"></span>
+                </div>
+            </div>
+            <div class="text-center text-gray-600">
+                <p id="print-footer">Terima kasih telah berbelanja!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
