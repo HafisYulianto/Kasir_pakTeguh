@@ -1,5 +1,6 @@
 let daftarBarang = [];
 let totalKeseluruhan = 0;
+let editId = null; // Untuk menyimpan id barang yang sedang diedit
 
 function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', {
@@ -20,15 +21,32 @@ function tambahBarang() {
     }
 
     const subtotal = harga * jumlah;
-    const barang = {
-        id: Date.now(),
-        nama,
-        harga,
-        jumlah,
-        subtotal
-    };
 
-    daftarBarang.push(barang);
+    if (editId !== null) {
+        // Edit mode
+        const idx = daftarBarang.findIndex(b => b.id === editId);
+        if (idx !== -1) {
+            daftarBarang[idx] = {
+                id: editId,
+                nama,
+                harga,
+                jumlah,
+                subtotal
+            };
+        }
+        editId = null;
+        document.getElementById('btnTambah').textContent = '➕ Tambah Barang';
+    } else {
+        // Tambah mode
+        const barang = {
+            id: Date.now(),
+            nama,
+            harga,
+            jumlah,
+            subtotal
+        };
+        daftarBarang.push(barang);
+    }
     updateTabel();
     clearForm();
 }
@@ -38,13 +56,25 @@ function hapusBarang(id) {
     updateTabel();
 }
 
+function editBarang(id) {
+    const barang = daftarBarang.find(b => b.id === id);
+    if (barang) {
+        document.getElementById('namaBarang').value = barang.nama;
+        document.getElementById('hargaBarang').value = barang.harga;
+        document.getElementById('jumlahBarang').value = barang.jumlah;
+        editId = id;
+        document.getElementById('btnTambah').textContent = '💾 Simpan Perubahan';
+        document.getElementById('namaBarang').focus();
+    }
+}
+
 function updateTabel() {
     const tbody = document.getElementById('tabelBarang');
 
     if (daftarBarang.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                     Belum ada barang yang ditambahkan
                 </td>
             </tr>
@@ -58,6 +88,7 @@ function updateTabel() {
                 <td class="px-4 py-3 text-center text-gray-600">${barang.jumlah}</td>
                 <td class="px-4 py-3 text-right font-semibold text-gray-800">${formatRupiah(barang.subtotal)}</td>
                 <td class="px-4 py-3 text-center">
+                    <button onclick="editBarang(${barang.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-2">✏️</button>
                     <button onclick="hapusBarang(${barang.id})" class="text-red-600 hover:text-red-800 font-medium">🗑️</button>
                 </td>
             </tr>
@@ -74,6 +105,8 @@ function clearForm() {
     document.getElementById('hargaBarang').value = '';
     document.getElementById('jumlahBarang').value = '';
     document.getElementById('namaBarang').focus();
+    editId = null;
+    document.getElementById('btnTambah').textContent = '➕ Tambah Barang';
 }
 
 function cetakNota() {
@@ -118,8 +151,13 @@ function cetakNota() {
     // Update footer
     document.getElementById('print-footer').textContent = `Terima kasih telah berbelanja di ${namaMitra}`;
 
-    // Print
-    window.print();
+    // Tampilkan nota-print, lalu print, lalu sembunyikan lagi
+    const notaPrint = document.getElementById('nota-print');
+    notaPrint.classList.remove('hidden');
+    setTimeout(() => {
+        window.print();
+        notaPrint.classList.add('hidden');
+    }, 100);
 }
 
 // Autofocus
