@@ -31,8 +31,19 @@ function tambahBarang() {
     const harga = parseInt(document.getElementById('hargaBarang').value) || 0;
     const jumlah = parseInt(document.getElementById('jumlahBarang').value) || 0;
 
-    if (!nama || harga <= 0 || jumlah <= 0) {
-        showToast('Mohon lengkapi semua field dengan benar!', 'bg-red-600');
+    // Validasi nama: tidak boleh kosong, tidak hanya spasi, tidak karakter aneh
+    const namaValid = /^[a-zA-Z0-9\s.,()-]+$/.test(nama);
+    if (!nama || !namaValid) {
+        showToast('Nama barang tidak valid! Hanya huruf, angka, spasi, titik, koma, kurung, dan strip.', 'bg-red-600');
+        document.getElementById('namaBarang').focus();
+        return;
+    }
+
+    // Validasi harga dan jumlah: harus lebih dari 0
+    if (harga <= 0 || jumlah <= 0) {
+        showToast('Harga dan jumlah harus lebih dari 0!', 'bg-red-600');
+        if (harga <= 0) document.getElementById('hargaBarang').focus();
+        else document.getElementById('jumlahBarang').focus();
         return;
     }
 
